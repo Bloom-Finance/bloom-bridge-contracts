@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "deploy:bridge:goerli": "hardhat deploy_bridge --network goerli ",
+    "deploy:bridge:bscTestnet": "hardhat deploy_bridge --network bsc_testnet",
     "deploy:receiver:goerli": "hardhat deploy_receiver --network goerli",
     "deploy:receiver:bscTestnet": "hardhat deploy_receiver --network bsc_testnet"
   },
@@ -35,6 +36,7 @@
     "typescript": ">=4.5.0"
   },
   "dependencies": {
+    "@certusone/wormhole-sdk": "^0.9.1",
     "dotenv": "^16.0.3",
     "signale": "^1.4.0"
   }
