@@ -1,49 +1,43 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
-import "./Wormhole/IWormhole.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./Wormhole/ITokenBridge.sol";
 
 contract BloomBridgeEVM {
     string private current_msg;
-    address private DAI;
-    address wormhole_core_bridge_address =
-        address(0x706abc4E45D419950511e474C7B9Ed348A4a716c);
+    address private DAI = 0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844;
+    IERC20 private DAIContract = IERC20(DAI);
+    address wormhole_token_bridge_address =
+        address(0xF890982f9310df57d00f659cf4fd87e65adEd8d7);
+    ITokenBridge private token_bridge =
+        ITokenBridge(wormhole_token_bridge_address);
     uint32 nonce = 0;
-    address owner;
-    mapping(uint16 => bytes32) _applicationContracts;
-    IWormhole core_bridge = IWormhole(wormhole_core_bridge_address);
-    mapping(bytes32 => bool) _completedMessages;
 
-    constructor() {
-        owner = msg.sender;
+    constructor() {}
+
+    function bridgeDAIToMumbai(
+        uint256 amountToTransfer,
+        uint16 receipientChainId,
+        bytes32 recipient
+    ) public returns (uint64 sequence) {
+        //To initiate transfer of normal ERC-20s
+        nonce += 1;
+        return
+            token_bridge.transferTokens(
+                DAI,
+                amountToTransfer,
+                receipientChainId,
+                recipient,
+                0,
+                nonce
+            );
     }
 
-    function sendMsg(bytes memory str) public returns (uint64 sequence) {
-        sequence = core_bridge.publishMessage(nonce, str, 200);
-        nonce = nonce + 1;
+    function approveTokenBridge(uint256 amount) public returns (bool) {
+        return DAIContract.approve(wormhole_token_bridge_address, amount);
     }
 
-    function receiveEncodedMsg(bytes memory encodedMsg) public {
-        (IWormhole.VM memory vm, bool valid, string memory reason) = core_bridge
-            .parseAndVerifyVM(encodedMsg);
-        require(valid, reason);
-        require(
-            _applicationContracts[vm.emitterChainId] == vm.emitterAddress,
-            "Invalid Emitter Address!"
-        );
-        require(!_completedMessages[vm.hash], "Message already processed");
-        _completedMessages[vm.hash] = true;
-        current_msg = string(vm.payload);
-    }
-
-    function getCurrentMsg() public view returns (string memory) {
-        return current_msg;
-    }
-
-    function registerApplicationContracts(
-        uint16 chainId,
-        bytes32 applicationAddr
-    ) public {
-        require(msg.sender == owner, "Only owner can register new chains!");
-        _applicationContracts[chainId] = applicationAddr;
+    function completeTransfer(bytes memory vaa) public {
+        token_bridge.completeTransfer(vaa);
     }
 }

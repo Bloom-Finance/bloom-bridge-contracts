@@ -5,27 +5,12 @@ async function main() {
   const BloomBridgeEVMFactory = await ethers.getContractFactory(
     'BloomBridgeEVM'
   );
-  const currentNetworkId = network.config.chainId;
-  const bloomBridgeEVM = await BloomBridgeEVMFactory.deploy();
-  // await bloomBridgeEVM.deployed();
-  // signale.success(
-  //   `Treasure contract was deployed to:${bloomBridgeEVM.address} 🚀🚀 `
-  // );
-  // if (
-  //   (currentNetworkId === 5 ||
-  //     currentNetworkId === 1 ||
-  //     currentNetworkId === 97 ||
-  //     currentNetworkId === 56) &&
-  //   process.env.ETHERSCAN_API_KEY
-  // ) {
-  //   signale.pending('Waiting for blocks to be mined 🕑 ');
-  //   await bloomBridgeEVM.deployTransaction.wait(10);
-  //   signale.success('Blocks mined ');
-  //   signale.pending('Verifying  contracts on Etherscan');
-  //   await verify(bloomBridgeEVM.address, [_dai]);
-  //   signale.success('Contracts verified on Etherscan');
-  //   signale.complete('All done 🎉🎉');
-  // }
+  const bloomBridge = await BloomBridgeEVMFactory.deploy();
+  await bloomBridge.deployed();
+  signale.success(`BloomBridgeEVM deployed to ${bloomBridge.address}`);
+  await bloomBridge.deployTransaction.wait(5);
+  signale.pending(`Waiting for some blocks to be mined...`);
+  await verify(bloomBridge.address, []);
 }
 
 async function verify(contractAddress: string, args: any[]) {

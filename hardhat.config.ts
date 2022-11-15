@@ -1,34 +1,14 @@
 import { HardhatUserConfig, task } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
-import {
-  attestFromEth,
-  getEmitterAddressEth,
-  parseSequenceFromLogEth,
-} from '@certusone/wormhole-sdk';
+import { tryNativeToHexString } from '@certusone/wormhole-sdk';
+import { ethers } from 'hardhat';
+import signale from 'signale';
+
 require('dotenv').config();
-task('attest', 'attest from eth', async (args, hre) => {
-  //TODO: Check private key
-  const signer = new hre.ethers.Wallet(
-    process.env.PRIVATE_KEY as string,
-    hre.ethers.provider
-  );
-  const tokenBridgeAddr = '0xF890982f9310df57d00f659cf4fd87e65adEd8d7';
-  const networkTokenAttestation = await attestFromEth(
-    tokenBridgeAddr,
-    signer,
-    '0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844'
-  );
-  const emitterAddr = getEmitterAddressEth(tokenBridgeAddr);
-  const seq = parseSequenceFromLogEth(networkTokenAttestation, tokenBridgeAddr);
-  const vaaURL = `https://wormhole-v2-testnet-api.certus.one/v1/signed_vaa/${5}/${emitterAddr}/${seq}`;
-  console.log('Searching for: ', vaaURL);
-  let vaaBytes = await (await fetch(vaaURL)).json();
-  while (!vaaBytes.vaaBytes) {
-    console.log('VAA not found, retrying in 5s!');
-    await new Promise((r) => setTimeout(r, 5000)); //Timeout to let Guardiand pick up log and have VAA ready
-    vaaBytes = await (await fetch(vaaURL)).json();
-  }
-});
+
+//TODO: Should we have to attest tokens if we can do it with portal?
+// task('attest', 'attest from eth', async (args, hre) => {});
+
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [
