@@ -28,12 +28,18 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY as string],
       chainId: 5,
     },
+    mumbai: {
+      url: process.env.RPC_MUMBAI,
+      accounts: [process.env.PRIVATE_KEY as string],
+      chainId: 80001,
+    },
   },
   etherscan: {
     apiKey: {
       bscTestnet: process.env.BSC_API_KEY,
       goerli: process.env.ETHERSCAN_API_KEY,
       mainnet: process.env.ETHERSCAN_API_KEY,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
     },
   },
 };
