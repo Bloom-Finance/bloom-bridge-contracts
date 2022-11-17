@@ -7,8 +7,9 @@
   "author": "Alex Fiorenza <alexfiorenza2012@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "deploy:testnet": "npx hardhat run  scripts/deploy.ts --network goerli",
-    "bridge:testnet": "npx hardhat run  scripts/bridge.ts --network mumbai"
+    "deploy:testnet:goerli": "npx hardhat run  scripts/deploy.ts --network goerli",
+    "bridge:testnet:goerli": "npx hardhat run  scripts/bridge.ts --network goerli",
+    "completeTransfer:testnet:mumbai": "npx hardhat completetransfer --network mumbai"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
