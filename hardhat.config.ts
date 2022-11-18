@@ -1,34 +1,6 @@
 import { HardhatUserConfig, task } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
-import { tryNativeToHexString } from '@certusone/wormhole-sdk';
-import { ethers } from 'hardhat';
-import signale from 'signale';
-import { abi } from './polygonBridgeABI.json';
-
 require('dotenv').config();
-
-//TODO: Should we have to attest tokens if we can do it with portal?
-task('completetransfer', 'Completes a transfer from a bridging')
-  .addParam('vaa', 'The vaa to complete the transfer')
-  .setAction(async (taskArgs, hre) => {
-    const signer = new ethers.Wallet(
-      process.env.PRIVATE_KEY as string,
-      ethers.provider
-    );
-    const targetBridge = new ethers.Contract(
-      '0x377D55a7928c046E18eEbb61977e714d2a76472a',
-      abi,
-      signer
-    );
-    const completeTransfer = await (
-      await targetBridge.completeTransfer(
-        Buffer.from(taskArgs.vaa as string, 'base64')
-      )
-    ).wait();
-    signale.success(
-      `Transfer completed! Tx hash: ${completeTransfer.transactionHash}`
-    );
-  });
 
 const config: HardhatUserConfig = {
   solidity: {

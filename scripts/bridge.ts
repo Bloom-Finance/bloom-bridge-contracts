@@ -8,6 +8,7 @@ import {
 } from '@certusone/wormhole-sdk';
 import { ethers } from 'hardhat';
 import signale from 'signale';
+import { getWormholeTokenBridgeAddress } from '../utils/addresses';
 async function main() {
   const bridgeAmt = ethers.utils.parseUnits('3', 18);
   const Bridge = await ethers.getContractFactory('BloomBridgeEVM');
@@ -24,11 +25,11 @@ async function main() {
     'hex'
   );
   const tx = await (
-    await bloomBridge.bridgeDAIToMumbai(bridgeAmt, 5, targetRecepient)
+    await bloomBridge.bridgeDAI(bridgeAmt, 5, targetRecepient)
   ).wait();
   signale.success(`Goerli bridge done tx hash: ${tx.transactionHash}`);
   const emmiterAddr = getEmitterAddressEth(
-    getTokenBridgeAddressForChain(2) // Wormhole token bridge contract address
+    getWormholeTokenBridgeAddress(5, true) // Wormhole token bridge contract address
   );
   const seq = parseSequenceFromLogEth(
     tx,
@@ -51,8 +52,9 @@ async function main() {
   );
 }
 
-const getTokenBridgeAddressForChain = (chainId: ChainId) =>
-  CONTRACTS['TESTNET'][coalesceChainName(chainId)].token_bridge || '';
+const getTokenBridgeAddressForChain = (chainId: number) => {
+  // CONTRACTS['TESTNET'][coalesceChainName(chainId)].token_bridge || '';
+};
 
 main().catch((error) => {
   console.error(error);

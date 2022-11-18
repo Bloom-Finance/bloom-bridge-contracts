@@ -5,22 +5,24 @@ import "./Wormhole/ITokenBridge.sol";
 
 contract BloomBridgeEVM {
     string private current_msg;
-    address private DAI = 0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844;
-    IERC20 private DAIContract = IERC20(DAI);
-    address wormhole_token_bridge_address =
-        address(0xF890982f9310df57d00f659cf4fd87e65adEd8d7);
-    ITokenBridge private token_bridge =
-        ITokenBridge(wormhole_token_bridge_address);
+    address private DAI;
+    IERC20 private DAIContract;
+    address wormhole_token_bridge_address;
+    ITokenBridge private token_bridge;
     uint32 nonce = 0;
 
-    constructor() {}
+    constructor(address _dai, address _wormhole_token_bridge_address) {
+        DAI = _dai;
+        DAIContract = IERC20(DAI);
+        wormhole_token_bridge_address = _wormhole_token_bridge_address;
+        token_bridge = ITokenBridge(wormhole_token_bridge_address);
+    }
 
-    function bridgeDAIToMumbai(
+    function bridgeDAI(
         uint256 amountToTransfer,
         uint16 receipientChainId,
         bytes32 recipient
     ) public returns (uint64 sequence) {
-        //To initiate transfer of normal ERC-20s
         nonce += 1;
         return
             token_bridge.transferTokens(
